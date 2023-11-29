@@ -12,14 +12,13 @@ Python课堂项目：基于Pytorch的手写数字识别
 
 <p align="center">
   <a href="https://github.com/wmh1024/HandwrittenNumeralRecognition">
-    <img src="img/icon.png" alt="Logo" width="80" height="80">
+    <img src="img/icon.png" alt="Logo" width="100" height="100">
   </a>
 
-  <h3 align="center">实验室预约系统 - 管理端</h3>
+  <h3 align="center">基于Pytorch的手写数字识别系统</h3>
   <p align="center">
-    一个基于 Vue3 + ElementUI plus 的管理系统！
+    实现了基于MNIST训练数据集版本和自制数据集版本的手写数字识别系统。对Cuda和MPS做了对于优化，提高了识别准确度和速度。
     <br />
-
 </p>
 
 ## 上手指南
@@ -30,28 +29,23 @@ Python课堂项目：基于Pytorch的手写数字识别
 git clone https://github.com/wmh1024/HandwrittenNumeralRecognition.git
 ```
 
-安装依赖
+基于MNIST训练数据集版本
 
 ```sh
-yarn
+python DataByMNIST.py
 ```
 
-开发运行
+基于自制数据集版本
 
 ```sh
-yarn run dev
-```
-
-生产打包
-
-```sh
-yarn run build
+python DataByMyData.py
 ```
 
 ## 使用到的框架
 
-- Vue3
-- Element UI Plus
+- pytorch
+- matplotlib
+- numpy
 
 ## 如何参与开源项目
 
