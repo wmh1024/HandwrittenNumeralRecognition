@@ -118,7 +118,7 @@ python DataByMyData.py
 
 [license-shield]: https://img.shields.io/github/license/wmh1024/HandwrittenNumeralRecognition.svg?style=flat-square
 
-[license-url]: https://github.com/wmh1024/HandwrittenNumeralRecognition/blob/master/LICENSE.txt
+[license-url]: https://github.com/wmh1024/HandwrittenNumeralRecognition/blob/main/LICENSE.txt
 
 [linkedin-shield]: https://img.shields.io/badge/-LinkedIn-black.svg?style=flat-square&logo=linkedin&colorB=555
 
