@@ -10,7 +10,7 @@
 
 <p align="center">
   <a href="https://github.com/wmh1024/HandwrittenNumeralRecognition">
-    <img src="img/icon.png" alt="Logo" width="100" height="100" style="border-radius: 30px;">
+    <img src="img/icon.png" alt="Logo" width="100" height="100" style="border-radius: 10px;">
   </a>
 
 <h3 align="center">基于Pytorch的手写数字识别</h3>
