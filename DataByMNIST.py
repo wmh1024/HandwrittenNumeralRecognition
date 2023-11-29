@@ -6,21 +6,25 @@ from torch import nn, optim
 from torch.utils.data import DataLoader
 from torch.utils.tensorboard import SummaryWriter
 
+print('---------------INFO----------------------')
 # cuda
 cuda = torch.cuda.is_available()
 # 打印mps是否可用
 print("cuda: " + str(cuda))
 # mps是否可用
-mps = torch.backends.mps.is_available()
+# mps = torch.backends.mps.is_available()
+mps = False
 # 打印mps是否可用
 print("msp: " + str(mps))
 # 优化器 => 学习率
 learning_rate = 0.01
 # epoch 学习轮次
 epoch = 10
+# 正确率列表
+correct_list = []
 
 # mps设备
-device = torch.device("mps" if torch.backends.mps.is_available() else "cpu")
+# device = torch.device("mps" if torch.backends.mps.is_available() else "cpu")
 
 # 训练集批次
 batch_size_train = 64
@@ -34,6 +38,7 @@ train_loader = DataLoader(torchvision.datasets.MNIST("data", train=True, downloa
                                                          [torchvision.transforms.ToTensor(),
                                                           torchvision.transforms.Normalize((0.1307,), (0.3081,))])),
                           batch_size=batch_size_train, shuffle=True)
+# shuffle 打乱顺序
 test_loader = DataLoader(torchvision.datasets.MNIST("data", train=False, download=True,
                                                     transform=torchvision.transforms.Compose(
                                                         [torchvision.transforms.ToTensor(),
@@ -212,6 +217,8 @@ def FunTest():
             correct += (predicted == targets).sum().item()
     # 打印测试信息
     print('Test Accuracy: {}/{} ({:.3f}%)'.format(correct, total, 100. * correct / total))
+    # 记录正确率到correct_list
+    correct_list.append(correct / total)
     # 返回正确率
     return correct / total
 
@@ -233,4 +240,6 @@ if __name__ == '__main__':
         # 打印保存信息
         print('Saved Model')
     end = time.time()
-    print(f"总共用时: {end - start}s")
+    print('---------------Train End----------------------')
+    print(f"总共用时: {end - start : .2f}s")
+    print(f"正确率: {max(correct_list) * 100. : .3f}%")
