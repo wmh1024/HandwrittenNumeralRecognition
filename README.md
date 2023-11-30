@@ -49,9 +49,9 @@ python DataByMyData.py
 
 ## 训练结果
 
-测试设备：MacBook Air 2020 M1 8G内存
-
 ### 对于MNIST训练数据集
+
+测试设备：MacBook Air 2020 M1 8G内存 使用MPS优化
 
 |    版本    |   准确率   |  训练时间   | epoch |
 |:--------:|:-------:|:-------:|:-----:|
@@ -59,16 +59,29 @@ python DataByMyData.py
 
 ### 对于自制数据集
 
+测试设备：MacBook Air 2020 M1 8G内存 使用MPS优化
+
 |  版本   |   准确率   |  训练时间  | epoch |
 |:-----:|:-------:|:------:|:-----:|
 | 自制数据集 | 58.065% | 28.77s |  20   |
 
 ### 对于MPS优化（基于MNIST数据集）
 
+测试设备：MacBook Air 2020 M1 8G内存
+
 | 版本  |   准确率   |  训练时间   | epoch |
 |:---:|:-------:|:-------:|:-----:|
 | CPU | 99.180% | 313.33s |  10   |
 | MPS | 99.170% | 155.95s |  10   |
+
+### 对于CUDA优化（基于MNIST数据集）
+
+测试设备：TBD
+
+|  版本  |   准确率   |  训练时间   | epoch |
+|:----:|:-------:|:-------:|:-----:|
+| CPU  | 99.180% | 313.33s |  10   |
+| CUDA | 99.170% | 155.95s |  10   |
 
 > 测试结果仅供参考，具体结果请根据自己的数据集进行测试。
 
@@ -86,9 +99,12 @@ python DataByMyData.py
 
 该项目使用 Git 进行版本管理。您可以在`repository`参看当前可用版本。
 
-## 作者
+## 开发者
 
-[wmh](https://github.com/wmh1024)、[B1ld](https://github.com/z1922569567)、[伊伊得一](https://gitee.com/yide-yi)、[好想吃烤鱼饭](https://gitee.com/yan-mengjie1)
+- [wmh](https://github.com/wmh1024)
+- [B1ld](https://github.com/z1922569567)
+- [伊伊得一](https://gitee.com/yide-yi)
+- [好想吃烤鱼饭](https://gitee.com/yan-mengjie1)
 
 *您也可以在贡献者名单中参看其他参与该项目的开发者。*
 

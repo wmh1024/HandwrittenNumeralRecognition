@@ -1,5 +1,4 @@
 import time
-
 import torchvision
 from matplotlib import pyplot as plt
 from torch import nn, optim
@@ -67,7 +66,8 @@ class MyDatasetPro(data.Dataset):
         label = self.labels[index]
         pil_img = Image.open(img).convert('L')
         data = self.transforms(pil_img)
-        return data, label
+        # 将label转换为长整型
+        return data, torch.tensor(label, dtype=torch.long)
 
     # 返回长度
     def __len__(self):
