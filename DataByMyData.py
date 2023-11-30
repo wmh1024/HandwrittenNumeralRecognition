@@ -118,14 +118,16 @@ number_dataloader = data.DataLoader(
 imgs_batch, labels_batch = next(iter(number_dataloader))
 print("len(imgs_batch.shape): ", len(labels_batch.shape))
 
+'''
 # 展示图片
 plt.figure(figsize=(12, 8))
 for i, (img, label) in enumerate(zip(imgs_batch[:6], labels_batch[:6])):
     img = img.permute(1, 2, 0).numpy()
-plt.subplot(2, 3, i + 1)
-plt.title(label.item())
-plt.imshow(img)
+    plt.subplot(2, 3, i + 1)
+    plt.title(label.item())
+    plt.imshow(img)
 plt.show()
+'''
 
 # 划分测试集和训练集
 index = np.random.permutation(len(imgs_path))
@@ -162,8 +164,6 @@ print('test_data_size: ', test_data_size)
 
 
 # 定义模型 继承nn.Module
-
-
 class Net(nn.Module):
     def __init__(self):
         super(Net, self).__init__()
@@ -183,7 +183,7 @@ class Net(nn.Module):
             nn.MaxPool2d(kernel_size=2, stride=2),
             # nn.Flatten：将输入的多维张量展平为一维向量。
             nn.Flatten(),
-            # nn.Linear：一个全连接层，输入特征数为3136，输出特征数为128。
+            # nn.Linear：一个全连接层，输入特征数为40000，输出特征数为128。
             nn.Linear(in_features=40000, out_features=128),
             # nn.Linear：另一个全连接层，输入特征数为128，输出特征数为10。
             nn.Linear(in_features=128, out_features=10)
@@ -227,9 +227,9 @@ def train(epoch):
     total_train_step = 0
 
     # 遍历训练集
-    for data in train_loader:
+    for train_data in train_loader:
         # 获取数据
-        imgs, targets = data
+        imgs, targets = train_data
         # 若使用GPU，则将数据移动到GPU上，使用msp。
         if cuda:
             imgs = imgs.cuda()
@@ -250,7 +250,7 @@ def train(epoch):
         # 记录损失率
         train_loss_list.append(loss.item())
         # 打印训练信息
-        if total_train_step % 200 == 0:
+        if total_train_step % 20 == 0:
             print('Train Epoch: {} [{}/{} ({:.3f}%)]\tLoss: {:.6f}'.format(
                 epoch, total_train_step, train_data_size,
                 100. * total_train_step / train_data_size, loss.item()
@@ -270,9 +270,9 @@ def FunTest():
     # 遍历测试集
     with torch.no_grad():
         # 遍历测试集
-        for data in test_loader:
+        for test_data in test_loader:
             # 获取数据
-            imgs, targets = data
+            imgs, targets = test_data
             # 若使用GPU，则将数据移动到GPU上。
             if cuda:
                 imgs, targets = imgs.cuda(), targets.cuda()
@@ -316,7 +316,7 @@ if __name__ == '__main__':
     end = time.time()
     print('---------------Train End----------------------')
     print(f"总共用时: {end - start : .2f}s")
-    print(f"正确率: {max(correct_list) * 100. : .3f}%")
+    print(f"正确率: {max(correct_list) * 100. : .2f}%")
 
     iterations = range(1, len(train_loss_list) + 1)
     plt.plot(iterations, train_loss_list)

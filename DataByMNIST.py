@@ -12,8 +12,7 @@ cuda = torch.cuda.is_available()
 # 打印mps是否可用
 print("cuda: " + str(cuda))
 # mps是否可用
-# mps = torch.backends.mps.is_available()
-mps = False
+mps = torch.backends.mps.is_available()
 # 打印mps是否可用
 print("msp: " + str(mps))
 # 优化器 => 学习率
@@ -24,7 +23,7 @@ epoch = 10
 correct_list = []
 
 # mps设备
-# device = torch.device("mps" if torch.backends.mps.is_available() else "cpu")
+device = torch.device("mps" if torch.backends.mps.is_available() else "cpu")
 
 # 训练集批次
 batch_size_train = 64
