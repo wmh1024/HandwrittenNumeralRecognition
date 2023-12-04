@@ -2,7 +2,6 @@ import time
 import torchvision
 from matplotlib import pyplot as plt
 from torch import nn, optim
-from torch.utils.data import DataLoader
 from torch.utils.tensorboard import SummaryWriter
 import glob
 import torch
@@ -12,7 +11,7 @@ import numpy as np
 from torchvision import transforms
 
 print('---------------INFO----------------------')
-# cuda
+# cuda是否可用
 cuda = torch.cuda.is_available()
 # 打印mps是否可用
 print("cuda: " + str(cuda))
@@ -21,51 +20,37 @@ mps = torch.backends.mps.is_available()
 # 打印mps是否可用
 print("msp: " + str(mps))
 # 优化器 => 学习率
-learning_rate = 0.01
-# epoch 学习轮次
-epoch = 20
+learning_rate = 0.003
 # 正确率列表
 correct_list = []
-
 # mps设备
 device = torch.device("mps" if torch.backends.mps.is_available() else "cpu")
 
+# epoch 学习轮次
+epoch = 20
 # 训练集批次
 batch_size_train = 32
 # 测试集批次
 batch_size_test = 100
+# 批次大小
+BATCH_SIZE = 2
 
 
-# 通过创建data.Dataset子类MyDataset来创建输入
 class MyDataset(data.Dataset):
-    # 类初始化: 初始化方法，传入数据文件夹路径。
-    def __init__(self, root):
-        self.imgs_path = root
-
-    # 进行切片: 根据索引下标，获得相应的图片。
-    def __getitem__(self, index):
-        img_path = self.imgs_path[index]
-        return img_path
-
-    # 返回长度: 计算长度方法，返回整个数据文件夹下所有文件的个数。
-    def __len__(self):
-        return len(self.imgs_path)
-
-
-class MyDatasetPro(data.Dataset):
     # 类初始化
     def __init__(self, img_paths, labels, transform):
         self.imgs = img_paths
         self.labels = labels
+        # 转换处理
         self.transforms = transform
 
     # 进行切片
-    # 根据给出的索引进行切片，并对其进行数据处理转换成Tensor，返回成Tensor
     def __getitem__(self, index):
         img = self.imgs[index]
         label = self.labels[index]
         pil_img = Image.open(img).convert('L')
         data = self.transforms(pil_img)
+        # 根据给出的索引进行切片，并对其进行数据处理转换成Tensor，返回成Tensor
         # 将label转换为长整型
         return data, torch.tensor(label, dtype=torch.long)
 
@@ -78,65 +63,32 @@ class MyDatasetPro(data.Dataset):
 imgs_path = list()
 all_labels = list()
 for i in range(10):
-    # 读取./data/*/*.jpg的所以图片路径
+    # 读取 ./MyData/{i}/*.jpg 的所有图片路径
     p = glob.glob(f'./MyData/{i}/*.jpg')
     imgs_path += p
     # 保存所有标签
     all_labels += [i] * len(p)
 
-# 利用自定义类MyDataset创建对象number_dataset
-number_dataset = MyDataset(imgs_path)
-# 创建dataloader
-number_dataloader = torch.utils.data.DataLoader(number_dataset, batch_size=2)
-# 打印第一个batch
-# print(next(iter(number_dataloader)))
-
 # 对数据进行转换处理
 transform = transforms.Compose([
     # 做的第一步转换
     transforms.Resize((100, 100)),
-    # 第二步转换
-    # 第一转换成Tensor，第二将图片取值范围转换成0-1之间，第三会将channel置前
+    # 第二步转换：将图片转换成Tensor
     transforms.ToTensor(),
-    # 第三步转换
-    # 归一化
+    # 第三步转换：归一化
     torchvision.transforms.Normalize((0.1307,), (0.3081,))
 ])
-
-# 定义batch_size 批次
-BATCH_SIZE = 5
-
-# 定义数据集
-number_dataset = MyDatasetPro(imgs_path, all_labels, transform)
-number_dataloader = data.DataLoader(
-    number_dataset,
-    batch_size=BATCH_SIZE,
-    shuffle=True
-)
-
-# 打印第一个batch
-imgs_batch, labels_batch = next(iter(number_dataloader))
-print("len(imgs_batch.shape): ", len(labels_batch.shape))
-
-'''
-# 展示图片
-plt.figure(figsize=(12, 8))
-for i, (img, label) in enumerate(zip(imgs_batch[:6], labels_batch[:6])):
-    img = img.permute(1, 2, 0).numpy()
-    plt.subplot(2, 3, i + 1)
-    plt.title(label.item())
-    plt.imshow(img)
-plt.show()
-'''
 
 # 划分测试集和训练集
 index = np.random.permutation(len(imgs_path))
 
-# 打乱数据
+# 将所有图片路径和标签打乱
 all_imgs_path = np.array(imgs_path)[index]
 all_labels = np.array(all_labels)[index]
 
+# 打印数据大小
 print("len(all_labels): ", len(all_labels))
+
 # 划分训练集和测试集
 s = int(len(all_imgs_path) * 0.8)
 
@@ -147,8 +99,8 @@ test_imgs = all_imgs_path[s:]
 test_labels = all_labels[s:]
 
 # 创建训练集和测试集
-train_ds = MyDatasetPro(train_imgs, train_labels, transform)
-test_ds = MyDatasetPro(test_imgs, test_labels, transform)
+train_ds = MyDataset(train_imgs, train_labels, transform)
+test_ds = MyDataset(test_imgs, test_labels, transform)
 
 # 创建训练集和测试集的dataloader
 train_loader = data.DataLoader(train_ds, batch_size=BATCH_SIZE, shuffle=True)
@@ -199,7 +151,7 @@ class Net(nn.Module):
         return self.model(x)
 
 
-# 损失函数
+# 定义损失函数
 if cuda:
     loss_fn = nn.CrossEntropyLoss().cuda()
 elif mps:
@@ -213,14 +165,14 @@ net = Net()
 optimizer = optim.SGD(net.parameters(), lr=learning_rate, momentum=0.9)
 # 构建TensorBoard
 writer = SummaryWriter(log_dir='logs/{}'.format(time.strftime('%Y%m%d-%H%M%S')))
+
 # 记录训练步数
 total_train_step = 0
-
 # 记录损失率列表
 train_loss_list = []
 
 
-# 训练函数 epoch: 训练轮次
+# 训练函数 (epoch: 训练轮次)
 def train(epoch):
     # 记录训练步数
     global total_train_step
@@ -257,7 +209,7 @@ def train(epoch):
             ))
         # 记录损失
         writer.add_scalar('loss', loss.item(), total_train_step)
-        # 训练步数加1
+        # 训练步数加 1
         total_train_step += 1
 
 
@@ -302,7 +254,7 @@ if __name__ == '__main__':
     # 训练模型
     for i in range(1, epoch + 1):
         # 打印训练信息
-        print("---------------Epoch: {}----------------------".format(i))
+        print(f"---------------Epoch: {i}----------------------")
         # 训练模型
         train(i)
         # 测试模型
@@ -318,6 +270,7 @@ if __name__ == '__main__':
     print(f"总共用时: {end - start : .2f}s")
     print(f"正确率: {max(correct_list) * 100. : .2f}%")
 
+    # 绘制损失曲线
     iterations = range(1, len(train_loss_list) + 1)
     plt.plot(iterations, train_loss_list)
     # 设置坐标轴标签和标题
