@@ -72,7 +72,7 @@ for i in range(10):
 # 对数据进行转换处理
 transform = transforms.Compose([
     # 做的第一步转换
-    transforms.Resize((100, 100)),
+    transforms.Resize((32, 32)),
     # 第二步转换：将图片转换成Tensor
     transforms.ToTensor(),
     # 第三步转换：归一化
@@ -136,7 +136,7 @@ class Net(nn.Module):
             # nn.Flatten：将输入的多维张量展平为一维向量。
             nn.Flatten(),
             # nn.Linear：一个全连接层，输入特征数为40000，输出特征数为128。
-            nn.Linear(in_features=40000, out_features=128),
+            nn.Linear(in_features=4096, out_features=128),
             # nn.Linear：另一个全连接层，输入特征数为128，输出特征数为10。
             nn.Linear(in_features=128, out_features=10)
         )
